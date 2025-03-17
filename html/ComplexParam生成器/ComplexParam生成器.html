@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComplexParam 编辑器</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <script>
+        function updatePropertyFields(propertyDiv) {
+            const typeSelect = propertyDiv.querySelector(".property-type");
+            const refSelect = propertyDiv.querySelector(".property-ref");
+            const additionalFields = propertyDiv.querySelector(".additional-fields");
+
+            if (typeSelect.value) {
+                refSelect.value = "";
+                additionalFields.style.display = "block";
+                if (typeSelect.value === "int") {
+                    additionalFields.innerHTML = `
+                        <label>最大值: <input type="number" class="property-max"></label>
+                        <label>最小值: <input type="number" class="property-min"></label>
+                        <label>调整步长: <input type="number" class="property-stepLength"></label>
+                        <label>默认值: <input type="number" class="property-default"></label>
+                    `
+                } else if (typeSelect.value === "string") {
+                    additionalFields.innerHTML = `
+                        <label>最大长度: <input type="number" class="property-maxLen"></label>
+                        <label>最小长度: <input type="number" class="property-minLen"></label>
+                        <label>正则: <input type="number" class="property-pattern"></label>
+                        <label>默认值: <input type="text" class="property-default"></label>
+                    `
+                }
+            } else if (refSelect.value) {
+                typeSelect.value = "";
+                additionalFields.style.display = "none";
+            }
+        }
+        
+        function addProperty(container) {
+            const div = document.createElement("div");
+            div.classList.add("property-item");
+            div.innerHTML = `
+                <fieldset>
+                    <legend>属性</legend>
+                    <label>名称: <input type="text" class="property-name" onchange="updateSchemaRequiredItems(this.parentElement.parentElement.parentElement)"></label>
+                    <label>标题: <input type="text" class="property-title"></label>
+                    <label>描述: <input type="text" class="property-description"></label>
+                    <label>布局: <input type="text" class="property-layout"></label>
+                    <label>可更新: <input type="checkbox" class="property-updateable"></label>
+                    <label>需要重启: <input type="checkbox" class="property-needRestart"></label>
+                    <label>必填: <input type="checkbox" class="property-required"></label>
+                    <label>加密: <input type="checkbox" class="property-secret"></label>
+                    
+                    <label>类型: 
+                        <select class="property-type" onchange="updatePropertyFields(this.parentElement.parentElement)">
+                            <option value="">-- 选择类型 --</option>
+                            <option value="int">int</option>
+                            <option value="string">string</option>
+                            <option value="float">float</option>
+                            <option value="bool">bool</option>
+                            <option value="txt">txt</option>
+                            <option value="array">array</option>
+                            <option value="password">password</option>
+                            <option value="port">port</option>
+                        </select>
+                    </label>
+                    <label>引用对象: 
+                        <select class="property-ref" onchange="updatePropertyFields(this.parentElement.parentElement)">
+                            <option value="">-- 选择引用 --</option>
+                        </select>
+                    </label>
+                    <div class="additional-fields" style="display:none">
+                        <label>必填: <input type="checkbox" class="property-required"></label>
+                    </div>
+                    <button type="button" onclick="this.parentElement.remove();updateSchemaRequiredItems(this.parentElement.parentElement.parentElement);">删除</button>
+                </fieldset>
+            `;
+            container.appendChild(div);
+            updateSchemaOptions();
+        }
+        
+        function updateSchemaRequiredItems(container) {
+            console.log(container)
+            const propNames = Array.from(container.parentElement.querySelectorAll(".property-name"))
+                .map(input => input.value.trim())
+                .filter(name => name !== "");
+            
+            container.parentElement.parentElement.querySelectorAll(".schema-requiredItems").forEach(select => {
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">-- 选择必填字段 --</option>' + 
+                    propNames.map(name => `<option value="${name}">${name}</option>`).join('');
+                select.value = currentValue;
+            });
+        }
+
+        function updateSchemaOptions() {
+            const schemaNames = Array.from(document.querySelectorAll(".schema-name"))
+                .map(input => input.value.trim())
+                .filter(name => name !== "");
+            
+            document.querySelectorAll(".property-ref").forEach(select => {
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">-- 选择引用 --</option>' + 
+                    schemaNames.map(name => `<option value="${name}">${name}</option>`).join('');
+                select.value = currentValue;
+            });
+        }
+
+        function addSchema() {
+            const container = document.getElementById("schema-container");
+            const div = document.createElement("div");
+            div.classList.add("schema-item");
+            div.innerHTML = `
+                <fieldset>
+                    <legend>Schema</legend>
+                    <label>名称: <input type="text" class="schema-name" oninput="updateSchemaOptions()"></label>
+                    <label>标题: <input type="text" class="schema-title"></label>
+                    <label>描述: <input type="text" class="schema-description"></label>
+                    <label>布局: 
+                        <select class="schema-layout">
+                            <option value="tab">标签布局</option>
+                            <option value="vertical">垂直布局</option>
+                        </select>
+                    </label>
+                    <label>必填策略: 
+                        <select class="schema-requiredPolicy">
+                            <option value="requiredOneOf">当且仅当填一个条目</option>
+                            <option value="requiredAtLeastOneOf">至少填一个条目</option>
+                        </select>
+                    </label>
+                    <label>必要字段: 
+                        <select class="schema-requiredItems" multiple>
+                            <option value="">-- 选择必填字段 --</option>
+                        </select>
+                    </label>
+                    <h3>Properties</h3>
+                    <div class="schema-properties"></div>
+                    <button type="button" onclick="addProperty(this.previousElementSibling)">添加 Property</button>
+                    <button type="button" onclick="this.parentElement.remove(); updateSchemaOptions();">删除</button>
+                </fieldset>
+            `;
+            container.appendChild(div);
+            updateSchemaOptions();
+        }
+
+        function exportData(format) {
+            const schema = Array.from(document.querySelectorAll(".schema-item")).map(schemaDiv => ({
+                name: schemaDiv.querySelector(".schema-name").value,
+                title: schemaDiv.querySelector(".schema-title").value,
+                description: schemaDiv.querySelector(".schema-description").value,
+                layout: schemaDiv.querySelector(".schema-layout").value,
+                requiredPolicy: schemaDiv.querySelector(".schema-requiredPolicy").value,
+                requiredItems: Array.from(schemaDiv.querySelector(".schema-requiredItems").selectedOptions, option => option.value),
+                properties: Array.from(schemaDiv.querySelectorAll(".property-item")).map(propDiv => ({
+                    name: propDiv.querySelector(".property-name").value,
+                    title: propDiv.querySelector(".property-title").value,
+                    description: propDiv.querySelector(".property-description").value,
+                    layout: propDiv.querySelector(".property-layout").value,
+                    updateable: propDiv.querySelector(".property-updateable").value,
+                    needRestart: propDiv.querySelector(".property-needRestart").value,
+                    required: propDiv.querySelector(".property-required").checked,
+                    secret: propDiv.querySelector(".property-secret")?.value,
+                    type: propDiv.querySelector(".property-type")?.value,
+                    ref: propDiv.querySelector(".property-ref")?.value,
+                    default: propDiv.querySelector(".property-default")?.value,
+
+                    max: propDiv.querySelector(".property-max")?.value,
+                    min: propDiv.querySelector(".property-min")?.value,
+                    stepLength: propDiv.querySelector(".property-stepLength")?.value,
+                    maxLen: propDiv.querySelector(".property-maxLen")?.value,
+                    minLen: propDiv.querySelector(".property-minxLen")?.value,
+                    pattern: propDiv.querySelector(".property-pattern")?.value
+    
+                }))
+            }));
+            
+            const data = {
+                root: {
+                    name: document.getElementById("root_name").value,
+                    properties: Array.from(document.getElementById("root-properties").querySelectorAll(".property-item")).map(propDiv => ({
+                        name: propDiv.querySelector(".property-name").value,
+                        title: propDiv.querySelector(".property-title").value,
+                        type: propDiv.querySelector(".property-type").value,
+                        ref: propDiv.querySelector(".property-ref").value,
+                        required: propDiv.querySelector(".property-required").checked
+                    }))
+                },
+                schema
+            };
+            
+            const output = format === "json" ? JSON.stringify(data, null, 2) : jsyaml.dump(data);
+            console.log(`导出的 ${format.toUpperCase()} 数据:\n\n` + output);
+        }
+    </script>
+</head>
+<body>
+    <h1>ComplexParam 编辑器</h1>
+    
+    <fieldset>
+        <legend>Root 对象</legend>
+        <label>名称: <input type="text" id="root_name" value="root"></label>
+        <h3>Properties</h3>
+        <div id="root-properties"></div>
+        <button type="button" onclick="addProperty(document.getElementById('root-properties'))">添加 Property</button>
+    </fieldset>
+    
+    <h2>Schema 对象</h2>
+    <div id="schema-container"></div>
+    <button type="button" onclick="addSchema()">添加 Schema</button>
+    
+    <br><br>
+    <button onclick="exportData('json')">导出 JSON</button>
+    <button onclick="exportData('yaml')">导出 YAML</button>
+</body>
+</html>
