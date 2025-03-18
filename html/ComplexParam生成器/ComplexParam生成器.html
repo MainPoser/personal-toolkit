@@ -41,14 +41,30 @@
             div.innerHTML = `
                 <fieldset>
                     <legend>属性</legend>
-                    <label>名称: <input type="text" class="property-name" onchange="updateSchemaRequiredItems(this.parentElement.parentElement.parentElement)"></label>
-                    <label>标题: <input type="text" class="property-title"></label>
-                    <label>描述: <input type="text" class="property-description"></label>
-                    <label>布局: <input type="text" class="property-layout"></label>
-                    <label>可更新: <input type="checkbox" class="property-updateable"></label>
-                    <label>需要重启: <input type="checkbox" class="property-needRestart"></label>
-                    <label>必填: <input type="checkbox" class="property-required"></label>
-                    <label>加密: <input type="checkbox" class="property-secret"></label>
+                    <label>名称: 
+                        <input type="text" class="property-name" onchange="updateSchemaRequiredItems(this.parentElement.parentElement.parentElement,false)">
+                    </label>
+                    <label>标题: 
+                        <input type="text" class="property-title">
+                    </label>
+                    <label>描述: 
+                        <input type="text" class="property-description">
+                    </label>
+                    <label>布局: 
+                        <input type="text" class="property-layout">
+                    </label>
+                    <label>可更新: 
+                        <input type="checkbox" class="property-updateable">
+                    </label>
+                    <label>需要重启: 
+                        <input type="checkbox" class="property-needRestart">
+                    </label>
+                    <label>必填: 
+                        <input type="checkbox" class="property-required">
+                    </label>
+                    <label>加密: 
+                        <input type="checkbox" class="property-secret">
+                    </label>
                     
                     <label>类型: 
                         <select class="property-type" onchange="updatePropertyFields(this.parentElement.parentElement)">
@@ -71,20 +87,26 @@
                     <div class="additional-fields" style="display:none">
                         <label>必填: <input type="checkbox" class="property-required"></label>
                     </div>
-                    <button type="button" onclick="this.parentElement.remove();updateSchemaRequiredItems(this.parentElement.parentElement.parentElement);">删除</button>
+                    <br/>
+                    <br/>
+                    <button type="button" onclick="updateSchemaRequiredItems(this.parentElement.parentElement,true);">删除 Properties</button>
                 </fieldset>
             `;
             container.appendChild(div);
             updateSchemaOptions();
         }
         
-        function updateSchemaRequiredItems(container) {
-            console.log(container)
-            const propNames = Array.from(container.parentElement.querySelectorAll(".property-name"))
+        function updateSchemaRequiredItems(container,deleted) {
+            schemaPropertiesLabel = container.parentElement
+            schemaItemLabel = container.parentElement.parentElement
+            if (deleted){
+                container.remove()
+            }
+            const propNames = Array.from(schemaPropertiesLabel.querySelectorAll(".property-name"))
                 .map(input => input.value.trim())
                 .filter(name => name !== "");
             
-            container.parentElement.parentElement.querySelectorAll(".schema-requiredItems").forEach(select => {
+            schemaItemLabel.querySelectorAll(".schema-requiredItems").forEach(select => {
                 const currentValue = select.value;
                 select.innerHTML = '<option value="">-- 选择必填字段 --</option>' + 
                     propNames.map(name => `<option value="${name}">${name}</option>`).join('');
@@ -135,7 +157,9 @@
                     <h3>Properties</h3>
                     <div class="schema-properties"></div>
                     <button type="button" onclick="addProperty(this.previousElementSibling)">添加 Property</button>
-                    <button type="button" onclick="this.parentElement.remove(); updateSchemaOptions();">删除</button>
+                    <br/>
+                    <br/>
+                    <button type="button" onclick="this.parentElement.remove(); updateSchemaOptions();">删除 Schema</button>
                 </fieldset>
             `;
             container.appendChild(div);
