@@ -10,24 +10,106 @@
             const typeSelect = propertyDiv.querySelector(".property-type");
             const refSelect = propertyDiv.querySelector(".property-ref");
             const additionalFields = propertyDiv.querySelector(".additional-fields");
-
+            console.log(typeSelect.value)
             if (typeSelect.value) {
                 refSelect.value = "";
                 additionalFields.style.display = "block";
                 if (typeSelect.value === "int") {
                     additionalFields.innerHTML = `
+                        <label>最大值: <input type="number" step="1" class="property-max"></label>
+                        <label>最小值: <input type="number" step="1" class="property-min"></label>
+                        <label>单位: <input type="txt" class="property-unit"></label>
+                        <label>调整步长: <input type="number" step="1" class="property-stepLength"></label>
+                        <label>默认值: <input type="number" step="1" class="property-default"></label>
+                    `
+                } else if (typeSelect.value === "port") {
+                    additionalFields.innerHTML = `
+                        <label>最大值: <input type="number" step="1" class="property-max"></label>
+                        <label>最小值: <input type="number" step="1" class="property-min"></label>
+                        <label>调整步长: <input type="number" step="1" class="property-stepLength"></label>
+                        <label>默认值: <input type="number" step="1" class="property-default"></label>
+                    `
+                } else if (typeSelect.value === "float") {
+                    additionalFields.innerHTML = `
                         <label>最大值: <input type="number" class="property-max"></label>
                         <label>最小值: <input type="number" class="property-min"></label>
+                        <label>单位: <input type="txt" class="property-unit"></label>
                         <label>调整步长: <input type="number" class="property-stepLength"></label>
                         <label>默认值: <input type="number" class="property-default"></label>
                     `
                 } else if (typeSelect.value === "string") {
                     additionalFields.innerHTML = `
-                        <label>最大长度: <input type="number" class="property-maxLen"></label>
-                        <label>最小长度: <input type="number" class="property-minLen"></label>
-                        <label>正则: <input type="number" class="property-pattern"></label>
+                        <label>最大长度: <input type="number" step="1" class="property-maxLen"></label>
+                        <label>最小长度: <input type="number" step="1" class="property-minLen"></label>
+                        <label>正则: <input type="text" class="property-pattern"></label>
                         <label>默认值: <input type="text" class="property-default"></label>
                     `
+                } else if (typeSelect.value === "txt") {
+                    additionalFields.innerHTML = `
+                        <label>最大长度: <input type="number" step="1" class="property-maxLen"></label>
+                        <label>最小长度: <input type="number" step="1" class="property-minLen"></label>
+                        <label>文本类型: 
+                            <select class="property-txt-type">
+                                <option value="">-- 选择类型 --</option>
+                                <option value="xml">xml</option>
+                                <option value="properties">properties</option>
+                                <option value="json">json</option>
+                                <option value="yaml">yaml</option>
+                                <option value="txt">txt</option>
+                            </select>
+                        </label>
+                        <label>正则: <input type="text" class="property-pattern"></label>
+                        <label>默认值: <input type="text" class="property-default"></label>
+                    `
+                } else if (typeSelect.value === "password") {
+                    additionalFields.innerHTML = `
+                        <label>最大长度: <input type="number" step="1" class="property-maxLen"></label>
+                        <label>最小长度: <input type="number" step="1" class="property-minLen"></label>
+                        <label>正则: <input type="txt" class="property-pattern"></label>
+                        <label>全局正则: <input type="txt" class="property-global-pattern" value="instance_admin_password_regex"></label>
+                        <label>默认值: <input type="text" class="property-default"></label>
+                    `
+                } else if (typeSelect.value === "array") {
+                    additionalFields.innerHTML = `
+                    <div class="array-item">
+                        <label>数组项类型: 
+                            <select class="property-type" onchange="updatePropertyFields(this.parentElement.parentElement)">
+                                <option value="">-- 选择类型 --</option>
+                                <option value="int">int</option>
+                                <option value="string">string</option>
+                                <option value="float">float</option>
+                                <option value="bool">bool</option>
+                            </select>
+                        </label>
+                        <label>数组项引用对象: 
+                            <select class="property-ref" onchange="updatePropertyFields(this.parentElement.parentElement)">
+                                <option value="">-- 选择引用 --</option>
+                            </select>
+                        </label>
+                        <div class="additional-fields" style="display:none">
+                            
+                        </div>
+                    </div>
+
+                    `;
+                    updateSchemaOptions();
+                } else if (typeSelect.value === "bool") {
+                    additionalFields.innerHTML = `
+                    <label>默认值: 
+                        <input type="text" class="property-default">
+                    </label>
+                    <label>true显示字段: 
+                        <select class="property-trueAccessories" multiple>
+                            <option value="">-- 选择显示字段 --</option>
+                        </select>
+                    </label>
+                    <label>false显示字段: 
+                        <select class="property-falseAccessories" multiple>
+                            <option value="">-- 选择显示字段 --</option>
+                        </select>
+                    </label>
+                    `;
+                    updateSchemaOptions();
                 }
             } else if (refSelect.value) {
                 typeSelect.value = "";
@@ -42,7 +124,7 @@
                 <fieldset>
                     <legend>属性</legend>
                     <label>名称: 
-                        <input type="text" class="property-name" onchange="updateSchemaRequiredItems(this.parentElement.parentElement.parentElement,false)">
+                        <input type="text" class="property-name" onchange="updateSchemaPropertyOptions(this.parentElement.parentElement.parentElement,false)">
                     </label>
                     <label>标题: 
                         <input type="text" class="property-title">
@@ -89,23 +171,39 @@
                     </div>
                     <br/>
                     <br/>
-                    <button type="button" onclick="updateSchemaRequiredItems(this.parentElement.parentElement,true);">删除 Properties</button>
+                    <button type="button" onclick="updateSchemaPropertyOptions(this.parentElement.parentElement,true);">删除 Properties</button>
                 </fieldset>
             `;
             container.appendChild(div);
             updateSchemaOptions();
         }
         
-        function updateSchemaRequiredItems(container,deleted) {
+        function updateSchemaPropertyOptions(container,deleted) {
             schemaPropertiesLabel = container.parentElement
             schemaItemLabel = container.parentElement.parentElement
             if (deleted){
                 container.remove()
             }
+            
+            // 获取当前域下所有的property-name
             const propNames = Array.from(schemaPropertiesLabel.querySelectorAll(".property-name"))
                 .map(input => input.value.trim())
                 .filter(name => name !== "");
-            
+            // 刷新当前域下所有的property-trueAccessories选项
+            schemaPropertiesLabel.querySelectorAll(".property-trueAccessories").forEach(select => {
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">-- 选择必填字段 --</option>' + 
+                    propNames.map(name => `<option value="${name}">${name}</option>`).join('');
+                select.value = currentValue;
+            });
+            // 刷新当前域下所有的property-falseAccessories选项
+            schemaPropertiesLabel.querySelectorAll(".property-falseAccessories").forEach(select => {
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">-- 选择必填字段 --</option>' + 
+                    propNames.map(name => `<option value="${name}">${name}</option>`).join('');
+                select.value = currentValue;
+            });
+            // 刷新Schema域下所有的schema-requiredItems选项
             schemaItemLabel.querySelectorAll(".schema-requiredItems").forEach(select => {
                 const currentValue = select.value;
                 select.innerHTML = '<option value="">-- 选择必填字段 --</option>' + 
