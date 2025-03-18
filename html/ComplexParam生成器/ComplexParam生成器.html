@@ -10,7 +10,7 @@
             const typeSelect = propertyDiv.querySelector(".property-type");
             const refSelect = propertyDiv.querySelector(".property-ref");
             const additionalFields = propertyDiv.querySelector(".additional-fields");
-            console.log(typeSelect.value)
+
             if (typeSelect.value) {
                 refSelect.value = "";
                 additionalFields.style.display = "block";
@@ -110,6 +110,7 @@
                     </label>
                     `;
                     updateSchemaOptions();
+                    updateSchemaPropertyOptions(propertyDiv.parentElement, false);
                 }
             } else if (refSelect.value) {
                 typeSelect.value = "";
@@ -276,22 +277,30 @@
                     name: propDiv.querySelector(".property-name").value,
                     title: propDiv.querySelector(".property-title").value,
                     description: propDiv.querySelector(".property-description").value,
-                    layout: propDiv.querySelector(".property-layout").value,
-                    updateable: propDiv.querySelector(".property-updateable").value,
-                    needRestart: propDiv.querySelector(".property-needRestart").value,
-                    required: propDiv.querySelector(".property-required").checked,
-                    secret: propDiv.querySelector(".property-secret")?.value,
                     type: propDiv.querySelector(".property-type")?.value,
                     ref: propDiv.querySelector(".property-ref")?.value,
                     default: propDiv.querySelector(".property-default")?.value,
-
+                    updateable: propDiv.querySelector(".property-updateable").checked,
+                    needRestart: propDiv.querySelector(".property-needRestart").checked,
+                    required: propDiv.querySelector(".property-required").checked,
+                    secret: propDiv.querySelector(".property-secret")?.checked,
+                    trueAccessories: Array.from(propDiv.querySelectorAll(".property-trueAccessories").selectedOptions, option => option.value),
+                    falseAccessories: Array.from(propDiv.querySelectorAll(".property-flaseAccessories").selectedOptions, option => option.value),
                     max: propDiv.querySelector(".property-max")?.value,
                     min: propDiv.querySelector(".property-min")?.value,
                     stepLength: propDiv.querySelector(".property-stepLength")?.value,
                     maxLen: propDiv.querySelector(".property-maxLen")?.value,
                     minLen: propDiv.querySelector(".property-minxLen")?.value,
-                    pattern: propDiv.querySelector(".property-pattern")?.value
-    
+                    pattern: propDiv.querySelector(".property-pattern")?.value,
+                    globalPattern: propDiv.querySelector(".property-globalPattern")?.value,
+                    multipleChoice: propDiv.querySelector(".property-multipleChoice")?.checked,
+                    txtType: propDiv.querySelector(".property-extType")?.value,
+                    valueEnum: Array.from(propDiv.querySelector(".property-valueEnum").selectedOptions, option => option.value),
+                    unit: propDiv.querySelector(".property-unit")?.value,
+                    accessoryPorts: Array.from(propDiv.querySelector(".property-accessoryPorts").selectedOptions, option => option.value),
+                    arrayItems: Array.from(propDiv.querySelector(".property-arrayItems").selectedOptions, option => option.value),
+                    layout: propDiv.querySelector(".property-layout").value,
+                    hintLevel: propDiv.querySelector(".property-hintLevel").value,
                 }))
             }));
             
@@ -301,9 +310,31 @@
                     properties: Array.from(document.getElementById("root-properties").querySelectorAll(".property-item")).map(propDiv => ({
                         name: propDiv.querySelector(".property-name").value,
                         title: propDiv.querySelector(".property-title").value,
-                        type: propDiv.querySelector(".property-type").value,
-                        ref: propDiv.querySelector(".property-ref").value,
-                        required: propDiv.querySelector(".property-required").checked
+                        description: propDiv.querySelector(".property-description").value,
+                        type: propDiv.querySelector(".property-type")?.value,
+                        ref: propDiv.querySelector(".property-ref")?.value,
+                        default: propDiv.querySelector(".property-default")?.value,
+                        updateable: propDiv.querySelector(".property-updateable").checked,
+                        needRestart: propDiv.querySelector(".property-needRestart").checked,
+                        required: propDiv.querySelector(".property-required").checked,
+                        secret: propDiv.querySelector(".property-secret")?.checked,
+                        trueAccessories: Array.from(propDiv.querySelector(".property-trueAccessories").selectedOptions, option => option.value),
+                        falseAccessories: Array.from(propDiv.querySelector(".property-flaseAccessories").selectedOptions, option => option.value),
+                        max: propDiv.querySelector(".property-max")?.value,
+                        min: propDiv.querySelector(".property-min")?.value,
+                        stepLength: propDiv.querySelector(".property-stepLength")?.value,
+                        maxLen: propDiv.querySelector(".property-maxLen")?.value,
+                        minLen: propDiv.querySelector(".property-minxLen")?.value,
+                        pattern: propDiv.querySelector(".property-pattern")?.value,
+                        globalPattern: propDiv.querySelector(".property-globalPattern")?.value,
+                        multipleChoice: propDiv.querySelector(".property-multipleChoice")?.checked,
+                        txtType: propDiv.querySelector(".property-extType")?.value,
+                        valueEnum: Array.from(propDiv.querySelector(".property-valueEnum").selectedOptions, option => option.value),
+                        unit: propDiv.querySelector(".property-unit")?.value,
+                        accessoryPorts: Array.from(propDiv.querySelector(".property-accessoryPorts").selectedOptions, option => option.value),
+                        arrayItems: Array.from(propDiv.querySelector(".property-arrayItems").selectedOptions, option => option.value),
+                        layout: propDiv.querySelector(".property-layout").value,
+                        hintLevel: propDiv.querySelector(".property-hintLevel").value,
                     }))
                 },
                 schema
