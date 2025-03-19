@@ -134,7 +134,11 @@
                         <input type="text" class="property-description">
                     </label>
                     <label>布局: 
-                        <input type="text" class="property-layout">
+                        <select class="property-layout">
+                            <option value="">-- 选择布局 --</option>
+                            <option value="tab">标签布局</option>
+                            <option value="vertical">垂直布局</option>
+                        </select>
                     </label>
                     <label>可更新: 
                         <input type="checkbox" class="property-updateable">
@@ -238,12 +242,14 @@
                     <label>描述: <input type="text" class="schema-description"></label>
                     <label>布局: 
                         <select class="schema-layout">
+                            <option value="">-- 选择布局 --</option>
                             <option value="tab">标签布局</option>
                             <option value="vertical">垂直布局</option>
                         </select>
                     </label>
                     <label>必填策略: 
                         <select class="schema-requiredPolicy">
+                            <option value="">-- 选择必填策略 --</option>
                             <option value="requiredOneOf">当且仅当填一个条目</option>
                             <option value="requiredAtLeastOneOf">至少填一个条目</option>
                         </select>
