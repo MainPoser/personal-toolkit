@@ -152,6 +152,9 @@
                     <label>加密: 
                         <input type="checkbox" class="property-secret">
                     </label>
+                    <label>描述显示方式: 
+                        <input type="number" step="1" class="property-hintLevel" value="0">
+                    </label>
                     
                     <label>类型: 
                         <select class="property-type" onchange="updatePropertyFields(this.parentElement.parentElement)">
@@ -290,8 +293,8 @@
                     needRestart: propDiv.querySelector(".property-needRestart").checked,
                     required: propDiv.querySelector(".property-required").checked,
                     secret: propDiv.querySelector(".property-secret")?.checked,
-                    trueAccessories: Array.from(propDiv.querySelectorAll(".property-trueAccessories").selectedOptions, option => option.value),
-                    falseAccessories: Array.from(propDiv.querySelectorAll(".property-flaseAccessories").selectedOptions, option => option.value),
+                    trueAccessories: propDiv.querySelector(".property-trueAccessories")?Array.from(propDiv.querySelector(".property-trueAccessories").selectedOptions, option => option.value):[],
+                    falseAccessories: propDiv.querySelector(".property-flaseAccessories")?Array.from(propDiv.querySelector(".property-flaseAccessories").selectedOptions, option => option.value):[],
                     max: propDiv.querySelector(".property-max")?.value,
                     min: propDiv.querySelector(".property-min")?.value,
                     stepLength: propDiv.querySelector(".property-stepLength")?.value,
@@ -301,10 +304,10 @@
                     globalPattern: propDiv.querySelector(".property-globalPattern")?.value,
                     multipleChoice: propDiv.querySelector(".property-multipleChoice")?.checked,
                     txtType: propDiv.querySelector(".property-extType")?.value,
-                    valueEnum: Array.from(propDiv.querySelector(".property-valueEnum").selectedOptions, option => option.value),
+                    valueEnum: propDiv.querySelector(".property-valueEnum")?Array.from(propDiv.querySelector(".property-valueEnum").selectedOptions, option => option.value):[],
                     unit: propDiv.querySelector(".property-unit")?.value,
-                    accessoryPorts: Array.from(propDiv.querySelector(".property-accessoryPorts").selectedOptions, option => option.value),
-                    items: Array.from(propDiv.querySelector(".property-arrayItems").selectedOptions, option => option.value),
+                    accessoryPorts: propDiv.querySelector(".property-accessoryPorts")?Array.from(propDiv.querySelector(".property-accessoryPorts").selectedOptions, option => option.value):[],
+                    items: propDiv.querySelector(".property-arrayItems")?Array.from(propDiv.querySelector(".property-arrayItems").selectedOptions, option => option.value):[],
                     layout: propDiv.querySelector(".property-layout").value,
                     hintLevel: propDiv.querySelector(".property-hintLevel").value,
                 }))
@@ -324,8 +327,8 @@
                         needRestart: propDiv.querySelector(".property-needRestart").checked,
                         required: propDiv.querySelector(".property-required").checked,
                         secret: propDiv.querySelector(".property-secret")?.checked,
-                        trueAccessories: Array.from(propDiv.querySelector(".property-trueAccessories").selectedOptions, option => option.value),
-                        falseAccessories: Array.from(propDiv.querySelector(".property-flaseAccessories").selectedOptions, option => option.value),
+                        trueAccessories: propDiv.querySelector(".property-trueAccessories")?Array.from(propDiv.querySelector(".property-trueAccessories").selectedOptions, option => option.value):[],
+                        falseAccessories: propDiv.querySelector(".property-flaseAccessories")?Array.from(propDiv.querySelector(".property-flaseAccessories").selectedOptions, option => option.value):[],
                         max: propDiv.querySelector(".property-max")?.value,
                         min: propDiv.querySelector(".property-min")?.value,
                         stepLength: propDiv.querySelector(".property-stepLength")?.value,
@@ -335,10 +338,10 @@
                         globalPattern: propDiv.querySelector(".property-globalPattern")?.value,
                         multipleChoice: propDiv.querySelector(".property-multipleChoice")?.checked,
                         txtType: propDiv.querySelector(".property-extType")?.value,
-                        valueEnum: Array.from(propDiv.querySelector(".property-valueEnum").selectedOptions, option => option.value),
+                        valueEnum: propDiv.querySelector(".property-valueEnum")?Array.from(propDiv.querySelector(".property-valueEnum").selectedOptions, option => option.value):[],
                         unit: propDiv.querySelector(".property-unit")?.value,
-                        accessoryPorts: Array.from(propDiv.querySelector(".property-accessoryPorts").selectedOptions, option => option.value),
-                        arrayItems: Array.from(propDiv.querySelector(".property-arrayItems").selectedOptions, option => option.value),
+                        accessoryPorts: propDiv.querySelector(".property-accessoryPorts")?Array.from(propDiv.querySelector(".property-accessoryPorts").selectedOptions, option => option.value):[],
+                        arrayItems: propDiv.querySelector(".property-arrayItems")?Array.from(propDiv.querySelector(".property-arrayItems").selectedOptions, option => option.value):[],
                         layout: propDiv.querySelector(".property-layout").value,
                         hintLevel: propDiv.querySelector(".property-hintLevel").value,
                     }))
